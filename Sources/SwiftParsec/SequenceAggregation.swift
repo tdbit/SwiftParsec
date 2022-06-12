@@ -48,7 +48,7 @@ extension Sequence where Iterator.Element: Equatable {
     ///
     /// - returns: An array with the duplicate elements removed.
     func removingDuplicates() -> [Self.Iterator.Element] {
-        return reduce([]) { (acc, elem) in
+        reduce([]) { (acc, elem) in
             guard !acc.contains(elem) else { return acc }
 
             return acc.appending(elem)

@@ -65,12 +65,12 @@ public enum Message: Comparable {
 
 /// Equality based on the index.
 public func == (leftMsg: Message, rightMsg: Message) -> Bool {
-    return leftMsg.index == rightMsg.index
+    leftMsg.index == rightMsg.index
 }
 
 /// Comparison based on the index.
 public func < (leftMsg: Message, rightMsg: Message) -> Bool {
-    return leftMsg.index < rightMsg.index
+    leftMsg.index < rightMsg.index
 }
 
 // ==============================================================================
@@ -83,7 +83,7 @@ public struct ParseError: Error, CustomStringConvertible {
     /// - parameter position: The current position.
     /// - returns: An unknown parse error.
     static func unknownParseError(_ position: SourcePosition) -> ParseError {
-        return ParseError(position: position, messages: [])
+        ParseError(position: position, messages: [])
     }
 
     /// Return a system unexpected parse error.
@@ -96,7 +96,7 @@ public struct ParseError: Error, CustomStringConvertible {
         _ position: SourcePosition,
         message: String
     ) -> ParseError {
-        return ParseError(
+        ParseError(
             position: position,
             messages: [.systemUnexpected(message)]
         )
@@ -107,7 +107,7 @@ public struct ParseError: Error, CustomStringConvertible {
 
     /// Sorted array of error messages.
     public var messages: [Message] {
-        get { return _messages.sorted() }
+        get { _messages.sorted() }
 
         set { _messages = newValue }
     }
@@ -117,11 +117,11 @@ public struct ParseError: Error, CustomStringConvertible {
 
     /// A textual representation of `self`.
     public var description: String {
-        return String(describing: position) + ":\n" + messagesDescription
+        String(describing: position) + ":\n" + messagesDescription
     }
 
     /// Indicates if `self` is an unknown parse error.
-    var isUnknown: Bool { return messages.isEmpty }
+    var isUnknown: Bool { messages.isEmpty }
 
     private var messagesDescription: String {
         guard !messages.isEmpty else {
@@ -249,6 +249,6 @@ public struct ParseError: Error, CustomStringConvertible {
 extension Sequence where Iterator.Element == String {
     /// Return an array with duplicate and empty strings removed.
     func removingDuplicatesAndEmpties() -> [Self.Iterator.Element] {
-        return self.removingDuplicates().filter { !$0.isEmpty }
+        self.removingDuplicates().filter { !$0.isEmpty }
     }
 }

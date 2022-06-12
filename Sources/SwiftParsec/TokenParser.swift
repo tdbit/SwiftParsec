@@ -429,7 +429,7 @@ extension TokenParser {
     /// returns the value of the number. The number can be specified in
     /// 'decimal', 'hexadecimal' or 'octal'.
     public var natural: GenericParser<String, UserState, Int> {
-        return lexeme(GenericTokenParser.naturalNumber) <?>
+        lexeme(GenericTokenParser.naturalNumber) <?>
             LocalizedString("natural")
     }
 
@@ -505,20 +505,20 @@ extension TokenParser {
     /// Parses a positive whole number in the decimal system. Returns the value
     /// of the number.
     public static var decimal: GenericParser<String, UserState, Int> {
-        return numberWithBase(10, parser: GenericParser.decimalDigit)
+        numberWithBase(10, parser: GenericParser.decimalDigit)
     }
 
     /// Parses a positive whole number in the hexadecimal system. The number
     /// should be prefixed with "x" or "X". Returns the value of the number.
     public static var hexadecimal: GenericParser<String, UserState, Int> {
-        return GenericParser.oneOf(hexadecimalPrefixes) *>
+        GenericParser.oneOf(hexadecimalPrefixes) *>
             numberWithBase(16, parser: GenericParser.hexadecimalDigit)
     }
 
     /// Parses a positive whole number in the octal system. The number should be
     /// prefixed with "o" or "O". Returns the value of the number.
     public static var octal: GenericParser<String, UserState, Int> {
-        return GenericParser.oneOf(octalPrefixes) *>
+        GenericParser.oneOf(octalPrefixes) *>
             numberWithBase(8, parser: GenericParser.octalDigit)
     }
 
@@ -533,7 +533,7 @@ extension TokenParser {
     public func symbol(
         _ name: String
     ) -> GenericParser<String, UserState, String> {
-        return lexeme(StrParser.string(name))
+        lexeme(StrParser.string(name))
     }
 
     /// `lexeme(parser)` first applies `parser` and than the `whiteSpace`
@@ -553,7 +553,7 @@ extension TokenParser {
     public func lexeme<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, Result> {
-        return parser <* whiteSpace
+        parser <* whiteSpace
     }
 
     /// Parses any white space. White space consists of _zero_ or more
@@ -596,7 +596,7 @@ extension TokenParser {
     public func parentheses<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, Result> {
-        return parser.between(symbol("("), symbol(")"))
+        parser.between(symbol("("), symbol(")"))
     }
 
     /// Lexeme parser `braces(parser)` parses `parser` enclosed in braces "{"
@@ -607,7 +607,7 @@ extension TokenParser {
     public func braces<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, Result> {
-        return parser.between(symbol("{"), symbol("}"))
+        parser.between(symbol("{"), symbol("}"))
     }
 
     /// Lexeme parser `angles(parser)` parses `parser` enclosed in angle
@@ -618,7 +618,7 @@ extension TokenParser {
     public func angles<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, Result> {
-        return parser.between(symbol("<"), symbol(">"))
+        parser.between(symbol("<"), symbol(">"))
     }
 
     /// Lexeme parser `brackets(parser)` parses `parser` enclosed in brackets
@@ -629,31 +629,31 @@ extension TokenParser {
     public func brackets<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, Result> {
-        return parser.between(symbol("["), symbol("]"))
+        parser.between(symbol("["), symbol("]"))
     }
 
     /// Lexeme parser `semicolon` parses the character ";" and skips any
     /// trailing white space. Returns the string ";".
     public var semicolon: GenericParser<String, UserState, String> {
-        return symbol(";")
+        symbol(";")
     }
 
     /// Lexeme parser `comma` parses the character "," and skips any trailing
     /// white space. Returns the string ",".
     public var comma: GenericParser<String, UserState, String> {
-        return symbol(",")
+        symbol(",")
     }
 
     /// Lexeme parser `colon` parses the character ":" and skips any trailing
     /// white space. Returns the string ":".
     public var colon: GenericParser<String, UserState, String> {
-        return symbol(":")
+        symbol(":")
     }
 
     /// Lexeme parser `dot` parses the character "." and skips any trailing
     /// white space. Returns the string ".".
     public var dot: GenericParser<String, UserState, String> {
-        return symbol(".")
+        symbol(".")
     }
 
     /// Lexeme parser `semicolonSeperated(parser)` parses _zero_ or more
@@ -665,7 +665,7 @@ extension TokenParser {
     public func semicolonSeparated<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, [Result]> {
-        return parser.separatedBy(semicolon)
+        parser.separatedBy(semicolon)
     }
 
     /// Lexeme parser `semicolonSeperated1(parser)` parses _one_ or more
@@ -677,7 +677,7 @@ extension TokenParser {
     public func semicolonSeparated1<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, [Result]> {
-        return parser.separatedBy1(semicolon)
+        parser.separatedBy1(semicolon)
     }
 
     /// Lexeme parser `commaSeparated(parser)` parses _zero_ or more occurrences
@@ -689,7 +689,7 @@ extension TokenParser {
     public func commaSeparated<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, [Result]> {
-        return parser.separatedBy(comma)
+        parser.separatedBy(comma)
     }
 
     /// Lexeme parser `commaSeparated1(parser)` parses _one_ or more occurrences
@@ -701,7 +701,7 @@ extension TokenParser {
     public func commaSeparated1<Result>(
         _ parser: GenericParser<String, UserState, Result>
     ) -> GenericParser<String, UserState, [Result]> {
-        return parser.separatedBy1(comma)
+        parser.separatedBy1(comma)
     }
 
     //
@@ -718,7 +718,7 @@ extension TokenParser {
     }
 
     private var multiLineComment: VoidParser {
-        return GenericParser {
+        GenericParser {
             let commentStart =
                 StrParser.string(self.languageDefinition.commentStart)
 
@@ -727,12 +727,12 @@ extension TokenParser {
     }
 
     private var inComment: VoidParser {
-        return languageDefinition.allowNestedComments ?
+        languageDefinition.allowNestedComments ?
             inNestedComment : inNonNestedComment
     }
 
     private var inNestedComment: VoidParser {
-        return GenericParser {
+        GenericParser {
             let langDef = self.languageDefinition
 
             let startEnd = (
@@ -751,7 +751,7 @@ extension TokenParser {
     }
 
     private var inNonNestedComment: VoidParser {
-        return GenericParser {
+        GenericParser {
             let langDef = self.languageDefinition
 
             let startEnd = (
@@ -769,7 +769,7 @@ extension TokenParser {
     }
 
     private static var escapeCode: CharacterParser {
-        return charEscape <|> charNumber <|> charAscii <|> charControl <?>
+        charEscape <|> charNumber <|> charAscii <|> charControl <?>
             LocalizedString("escape code")
     }
 
@@ -843,8 +843,8 @@ extension TokenParser {
         _ base: Int,
         parser: CharacterParser
     ) -> IntParser {
-        return parser.many1 >>- { digits in
-            return integerWithDigits(String(digits), base: base)
+        parser.many1 >>- { digits in
+            integerWithDigits(String(digits), base: base)
         }
     }
 
@@ -873,7 +873,7 @@ extension TokenParser {
     }
 
     private static var doubleIntegerPart: DoubleParser {
-        return GenericParser.decimalDigit.many1 >>- { digits in
+        GenericParser.decimalDigit.many1 >>- { digits in
             GenericParser(result: Double(String(digits))!)
         }
     }
@@ -888,7 +888,7 @@ extension TokenParser {
 
     private static func sign<Number: SignedNumeric>()
         -> GenericParser<String, UserState, (Number) -> Number> {
-        return GenericParser.character("-") *> GenericParser(result: -) <|>
+        GenericParser.character("-") *> GenericParser(result: -) <|>
             GenericParser.character("+") *> GenericParser(result: { $0 }) <|>
             GenericParser(result: { $0 })
     }
@@ -913,7 +913,7 @@ extension TokenParser {
 
         let fraction = (fract <?> fractionMsg) >>- { frac in
             (expo <?> exponentMsg).otherwise(1) >>- { exp in
-                return GenericParser(result: (number + frac) * exp)
+                GenericParser(result: (number + frac) * exp)
             }
         }
 

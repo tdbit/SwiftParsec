@@ -74,7 +74,7 @@ public extension LanguageDefinition {
     /// names or operators, is case sensitive and doesn't accept comments,
     /// identifiers or operators.
     static var empty: LanguageDefinition {
-        return LanguageDefinition(
+        LanguageDefinition(
             commentStart: "",
             commentEnd: "",
             commentLine: "",
