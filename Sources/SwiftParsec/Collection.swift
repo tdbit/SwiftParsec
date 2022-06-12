@@ -1,5 +1,5 @@
 // ==============================================================================
-// CollectionAggregation.swift
+// Collection.swift
 // SwiftParsec
 //
 // Created by David Dufresne on 2015-10-09.
@@ -20,10 +20,7 @@ extension Collection {
     ///   - initial: The initial value.
     ///   - combine: The combining function.
     /// - returns: The combined result of each element of `self`.
-    func reduceRight<T>(
-        _ initial: T,
-        combine: (T, Self.Iterator.Element) throws -> T
-    ) rethrows -> T {
+    func reduceRight<T>(_ initial: T, combine: (T, Self.Iterator.Element) throws -> T) rethrows -> T {
         var acc = initial
         for elem in reversed() {
             acc = try combine(acc, elem)
