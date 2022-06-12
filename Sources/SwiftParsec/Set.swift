@@ -1,5 +1,5 @@
 // ==============================================================================
-// SetAggregation.swift
+// Set.swift
 // SwiftParsec
 //
 // Created by David Dufresne on 2015-10-10.
@@ -16,9 +16,7 @@ extension Set {
     /// - parameter transform: The transform function.
     /// - returns: A `Set` containing the results of mapping transform over
     ///   `self`.
-    func map<T>(
-        _ transform: (Iterator.Element) throws -> T
-    ) rethrows -> Set<T> {
+    func map<T>(_ transform: (Iterator.Element) throws -> T) rethrows -> Set<T> {
         var mappedSet = Set<T>()
 
         for elem in self {
