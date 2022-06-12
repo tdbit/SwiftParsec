@@ -1,5 +1,5 @@
 // ==============================================================================
-// CharacterMembership.swift
+// Character.swift
 // SwiftParsec
 //
 // Created by David Dufresne on 2015-09-19.
@@ -7,13 +7,6 @@
 //
 // Character extension
 // ==============================================================================
-
-private let uppercaseSet = CharacterSet.uppercaseLetters
-private let lowercaseSet = CharacterSet.lowercaseLetters
-private let alphaSet = CharacterSet.letters
-private let alphaNumericSet = CharacterSet.alphanumerics
-private let symbolSet = CharacterSet.symbols
-private let digitSet = CharacterSet.decimalDigits
 
 // ==============================================================================
 // Extension containing methods to test if a character is a member of a
@@ -69,38 +62,38 @@ extension Character {
     /// `true` if `self` normalized contains a single code unit that is in the
     /// categories of Uppercase and Titlecase Letters.
     var isUppercase: Bool {
-        return isMember(of: uppercaseSet)
+        return isMember(of: CharacterSet.uppercaseLetters)
     }
 
     /// `true` if `self` normalized contains a single code unit that is in the
     /// category of Lowercase Letters.
     var isLowercase: Bool {
-        return isMember(of: lowercaseSet)
+        return isMember(of: CharacterSet.lowercaseLetters)
     }
 
     /// `true` if `self` normalized contains a single code unit that is in the
     /// categories of Letters and Marks.
     var isAlpha: Bool {
-        return isMember(of: alphaSet)
+        return isMember(of: CharacterSet.letters)
     }
 
     /// `true` if `self` normalized contains a single code unit that is in th
     /// categories of Letters, Marks, and Numbers.
     var isAlphaNumeric: Bool {
-        return isMember(of: alphaNumericSet)
+        return isMember(of: CharacterSet.alphanumerics)
     }
 
     /// `true` if `self` normalized contains a single code unit that is in the
     /// category of Symbols. These characters include, for example, the dollar
     /// sign ($) and the plus (+) sign.
     var isSymbol: Bool {
-        return isMember(of: symbolSet)
+        return isMember(of: CharacterSet.symbols)
     }
 
     /// `true` if `self` normalized contains a single code unit that is in the
     /// category of Decimal Numbers.
     var isDigit: Bool {
-        return isMember(of: digitSet)
+        return isMember(of: CharacterSet.decimalDigits)
     }
 
     /// `true` if `self` is an ASCII decimal digit, i.e. between "0" and "9".
@@ -132,5 +125,27 @@ extension Character {
         guard unicodes.count == 1 else { return false }
 
         return set.contains(unicodes.first!)
+    }
+}
+
+// ==============================================================================
+// Extension containing methods related to the conversion of a character.
+extension Character {
+    /// The first `UnicodeScalar` of `self`.
+    var unicodeScalar: UnicodeScalar {
+        let unicodes = String(self).unicodeScalars
+        return unicodes[unicodes.startIndex]
+    }
+
+    /// Lowercase `self`.
+    var lowercase: Character {
+        let str = String(self).lowercased()
+        return str[str.startIndex]
+    }
+
+    /// Uppercase `self`.
+    var uppercase: Character {
+        let str = String(self).uppercased()
+        return str[str.startIndex]
     }
 }
