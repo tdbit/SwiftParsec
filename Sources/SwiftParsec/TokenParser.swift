@@ -215,13 +215,13 @@ public protocol TokenParser {
 // Default implementation of the methods of the `TokenParser` parser type.
 extension TokenParser {
     // Type aliases used internally to simplify the code.
-    typealias StrParser = LexicalParser<UserState, String>
-    typealias CharacterParser = LexicalParser<UserState, Character>
-    typealias IntParser = LexicalParser<UserState, Int>
-    typealias DoubleParser = LexicalParser<UserState, Double>
-    typealias IntDoubleParser =
-        LexicalParser<UserState, Either<Int, Double>>
-    typealias VoidParser = LexicalParser<UserState, ()>
+    typealias Lexer<Result> = LexicalParser<UserState, Result>
+    typealias StringLexer = LexicalParser<UserState, String>
+    typealias CharacterLexer = LexicalParser<UserState, Character>
+    typealias IntLexer = LexicalParser<UserState, Int>
+    typealias DoubleLexer = LexicalParser<UserState, Double>
+    typealias IntDoubleLexer = LexicalParser<UserState, Either<Int, Double>>
+    typealias VoidLexer = LexicalParser<UserState, ()>
 
     //
     // Identifiers & Reserved words
@@ -236,14 +236,14 @@ extension TokenParser {
     public var identifier: LexicalParser<UserState, String> {
         let langDef = languageDefinition
 
-        let ident: StrParser = langDef.identifierStart >>- { char in
+        let ident: StringLexer = langDef.identifierStart >>- { char in
             langDef.identifierLetter(char).many >>- { chars in
                 let allChars = chars.prepending(char)
                 return GenericParser(result: String(allChars))
             }
         } <?> LocalizedString("identifier")
 
-        let identCheck: StrParser = ident >>- { name in
+        let identCheck: StringLexer = ident >>- { name in
             let reservedNames: Set<String>
             let identifierName: String
 
@@ -297,14 +297,14 @@ extension TokenParser {
     public var legalOperator: LexicalParser<UserState, String> {
         let langDef = languageDefinition
 
-        let operatorParser: StrParser = langDef.operatorStart >>- { char in
+        let operatorParser: StringLexer = langDef.operatorStart >>- { char in
             langDef.operatorLetter.many >>- { chars in
                 let allChars = chars.prepending(char)
                 return GenericParser(result: String(allChars))
             }
         } <?> LocalizedString("operator")
 
-        let opCheck: StrParser = operatorParser >>- { name in
+        let opCheck: StringLexer = operatorParser >>- { name in
             guard !langDef.reservedOperators.contains(name) else {
                 let reservedOperatorMsg = LocalizedString("reserved operator ")
                 return GenericParser.unexpected(reservedOperatorMsg + name)
@@ -326,7 +326,7 @@ extension TokenParser {
     public func reservedOperator(
         _ name: String
     ) -> LexicalParser<UserState, ()> {
-        let operatorParser = VoidParser.string(name) *>
+        let operatorParser = VoidLexer.string(name) *>
             languageDefinition.operatorLetter.noOccurence <?>
             LocalizedString("end of ") + name
 
@@ -341,7 +341,7 @@ extension TokenParser {
     /// literal character value. This parser deals correctly with escape
     /// sequences.
     public var characterLiteral: LexicalParser<UserState, Character> {
-        let characterLetter = CharacterParser.satisfy { char in
+        let characterLetter = CharacterLexer.satisfy { char in
             char != "'" && char != "\\" && char != substituteCharacter
         }
 
@@ -353,7 +353,7 @@ extension TokenParser {
         let character = characterLetter <|> characterEscape <?>
             LocalizedString("literal character")
 
-        let quote = CharacterParser.character("'")
+        let quote = CharacterLexer.character("'")
 
         let endOfCharMsg = LocalizedString("end of character")
 
@@ -365,7 +365,7 @@ extension TokenParser {
     /// string value. This parser deals correctly with escape sequences and
     /// gaps.
     public var stringLiteral: LexicalParser<UserState, String> {
-        let stringLetter = CharacterParser.satisfy { char in
+        let stringLetter = CharacterLexer.satisfy { char in
             char != "\"" && char != "\\" && char != substituteCharacter
         }
 
@@ -387,7 +387,7 @@ extension TokenParser {
 
         let stringChar = stringLetter.map { $0 } <|> stringEscape
 
-        let doubleQuote = CharacterParser.character("\"")
+        let doubleQuote = CharacterLexer.character("\"")
         let endOfStringMsg = LocalizedString("end of string")
         let string = stringChar.many.between(
             doubleQuote, doubleQuote <?> endOfStringMsg
@@ -434,19 +434,19 @@ extension TokenParser {
     /// `integer` except that it can parse bigger numbers. Returns the value of
     /// the number as a `Double`.
     public var integerAsFloat: LexicalParser<UserState, Double> {
-        let hexaPrefix = CharacterParser.oneOf(hexadecimalPrefixes)
+        let hexaPrefix = CharacterLexer.oneOf(hexadecimalPrefixes)
         let hexa = hexaPrefix *> GenericTokenParser.doubleWithBase(
             16,
             parser: GenericParser.hexadecimalDigit
         )
 
-        let octPrefix = CharacterParser.oneOf(octalPrefixes)
+        let octPrefix = CharacterLexer.oneOf(octalPrefixes)
         let oct = octPrefix *> GenericTokenParser.doubleWithBase(
             8,
             parser: GenericParser.octalDigit
         )
 
-        let decDigit = CharacterParser.decimalDigit
+        let decDigit = CharacterLexer.decimalDigit
         let dec = GenericTokenParser.doubleWithBase(10, parser: decDigit)
 
         let zeroNumber = (GenericParser.character("0") *>
@@ -516,7 +516,7 @@ extension TokenParser {
     public func symbol(
         _ name: String
     ) -> LexicalParser<UserState, String> {
-        return lexeme(StrParser.string(name))
+        return lexeme(StringLexer.string(name))
     }
 
     /// `lexeme(parser)` first applies `parser` and than the `whiteSpace`
@@ -545,7 +545,7 @@ extension TokenParser {
     /// defined in the `LanguageDefinition` that is passed to the initializer of
     /// this token parser.
     public var whiteSpace: LexicalParser<UserState, ()> {
-        let simpleSpace = CharacterParser.satisfy({ $0.isSpace }).skipMany1
+        let simpleSpace = CharacterLexer.satisfy({ $0.isSpace }).skipMany1
 
         let commentLineEmpty = languageDefinition.commentLine.isEmpty
         let commentStartEmpty = languageDefinition.commentStart.isEmpty
@@ -692,36 +692,36 @@ extension TokenParser {
     // causes problems with the internal typealiases.
     //
 
-    private var oneLineComment: VoidParser {
-        let commentStart = StrParser.string(languageDefinition.commentLine)
+    private var oneLineComment: VoidLexer {
+        let commentStart = StringLexer.string(languageDefinition.commentLine)
 
         return commentStart.attempt *>
             GenericParser.satisfy({ $0 != "\n" }).skipMany *>
             GenericParser(result: ())
     }
 
-    private var multiLineComment: VoidParser {
+    private var multiLineComment: VoidLexer {
         return GenericParser {
             let commentStart =
-                StrParser.string(self.languageDefinition.commentStart)
+                StringLexer.string(self.languageDefinition.commentStart)
 
             return commentStart.attempt *> self.inComment
         }
     }
 
-    private var inComment: VoidParser {
+    private var inComment: VoidLexer {
         return languageDefinition.allowNestedComments ?
             inNestedComment : inNonNestedComment
     }
 
-    private var inNestedComment: VoidParser {
+    private var inNestedComment: VoidLexer {
         return GenericParser {
             let langDef = self.languageDefinition
 
             let startEnd = (
                 langDef.commentStart + langDef.commentEnd
                 ).removingDuplicates()
-            let commentEnd = StrParser.string(langDef.commentEnd)
+            let commentEnd = StringLexer.string(langDef.commentEnd)
 
             return commentEnd.attempt *> GenericParser(result: ()) <|>
                 self.multiLineComment *> self.inNestedComment <|>
@@ -733,14 +733,14 @@ extension TokenParser {
         }
     }
 
-    private var inNonNestedComment: VoidParser {
+    private var inNonNestedComment: VoidLexer {
         return GenericParser {
             let langDef = self.languageDefinition
 
             let startEnd = (
                 langDef.commentStart + langDef.commentEnd
             ).removingDuplicates()
-            let commentEnd = StrParser.string(langDef.commentEnd)
+            let commentEnd = StringLexer.string(langDef.commentEnd)
 
             return commentEnd.attempt *> GenericParser(result: ()) <|>
                 GenericParser.noneOf(String(startEnd)).skipMany1 *>
@@ -751,23 +751,23 @@ extension TokenParser {
         }
     }
 
-    private static var escapeCode: CharacterParser {
+    private static var escapeCode: CharacterLexer {
         return charEscape <|> charNumber <|> charAscii <|> charControl <?>
             LocalizedString("escape code")
     }
 
-    private static var charEscape: CharacterParser {
+    private static var charEscape: CharacterLexer {
         let parsers = escapeMap.map { escCode in
-            CharacterParser.character(escCode.esc) *>
+            CharacterLexer.character(escCode.esc) *>
                 GenericParser(result: escCode.code)
         }
 
         return GenericParser.choice(parsers)
     }
 
-    private static var charNumber: CharacterParser {
-        let octalDigit = CharacterParser.octalDigit
-        let hexaDigit = CharacterParser.hexadecimalDigit
+    private static var charNumber: CharacterLexer {
+        let octalDigit = CharacterLexer.octalDigit
+        let hexaDigit = CharacterLexer.hexadecimalDigit
 
         let num = decimal <|>
             GenericParser.character("o") *>
@@ -778,17 +778,17 @@ extension TokenParser {
         return num >>- { characterFromInt($0) }
     }
 
-    private static var charAscii: CharacterParser {
+    private static var charAscii: CharacterLexer {
         let parsers = asciiCodesMap.map { control in
-            StrParser.string(control.esc) *> GenericParser(result: control.code)
+            StringLexer.string(control.esc) *> GenericParser(result: control.code)
         }
 
         return GenericParser.choice(parsers)
     }
 
-    private static var charControl: CharacterParser {
+    private static var charControl: CharacterLexer {
         let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        let ctrlCodes: CharacterParser =
+        let ctrlCodes: CharacterLexer =
             GenericParser.oneOf(upper).flatMap { char in
                 let charA: Character = "A"
                 let value = char.unicodeScalar.value -
@@ -811,7 +811,7 @@ extension TokenParser {
             GenericParser.character("_") *> GenericParser(result: "\u{001F}"))
     }
 
-    static func characterFromInt(_ value: Int) -> CharacterParser {
+    static func characterFromInt(_ value: Int) -> CharacterLexer {
         guard let scalar = UnicodeScalar.fromInt(value) else {
             let outsideMsg = LocalizedString(
                 "value outside of Unicode codespace"
@@ -824,14 +824,14 @@ extension TokenParser {
 
     private static func numberWithBase(
         _ base: Int,
-        parser: CharacterParser
-    ) -> IntParser {
+        parser: CharacterLexer
+    ) -> IntLexer {
         return parser.many1 >>- { digits in
             return integerWithDigits(String(digits), base: base)
         }
     }
 
-    static func integerWithDigits(_ digits: String, base: Int) -> IntParser {
+    static func integerWithDigits(_ digits: String, base: Int) -> IntLexer {
         guard let integer = Int(digits, radix: base) else {
             let overflowMsg = LocalizedString("Int overflow")
             return GenericParser.fail(overflowMsg)
@@ -842,8 +842,8 @@ extension TokenParser {
 
     private static func doubleWithBase(
         _ base: Int,
-        parser: CharacterParser
-    ) -> DoubleParser {
+        parser: CharacterLexer
+    ) -> DoubleLexer {
         let baseDouble = Double(base)
 
         return parser.many1 >>- { digits in
@@ -855,13 +855,13 @@ extension TokenParser {
         }
     }
 
-    private static var doubleIntegerPart: DoubleParser {
+    private static var doubleIntegerPart: DoubleLexer {
         return GenericParser.decimalDigit.many1 >>- { digits in
             GenericParser(result: Double(String(digits))!)
         }
     }
 
-    private static var naturalNumber: IntParser {
+    private static var naturalNumber: IntLexer {
         let zeroNumber = GenericParser.character("0") *>
             (hexadecimal <|> octal <|> decimal <|> GenericParser(result: 0))
             <?> ""
@@ -876,10 +876,10 @@ extension TokenParser {
             GenericParser(result: { $0 })
     }
 
-    private static func fractionalExponent(_ number: Double) -> DoubleParser {
+    private static func fractionalExponent(_ number: Double) -> DoubleLexer {
         let fractionMsg = LocalizedString("fraction")
 
-        let fract = CharacterParser.character(".") *>
+        let fract = CharacterLexer.character(".") *>
             (GenericParser.decimalDigit.many1 <?> fractionMsg).map { digits in
                 digits.reduceRight(0) { frac, digit in
                     (frac + Double(String(digit))!) / 10
@@ -907,20 +907,20 @@ extension TokenParser {
         return fraction <|> exponent
     }
 
-    private func caseString(_ name: String) -> StrParser {
+    private func caseString(_ name: String) -> StringLexer {
         if languageDefinition.isCaseSensitive {
-            return StrParser.string(name)
+            return StringLexer.string(name)
         }
 
-        func walk(_ string: String) -> VoidParser {
-            let unit = VoidParser(result: ())
+        func walk(_ string: String) -> VoidLexer {
+            let unit = VoidLexer(result: ())
 
             guard !string.isEmpty else { return unit }
 
             var str = string
             let char = str.remove(at: str.startIndex)
 
-            let charParser: VoidParser
+            let charParser: VoidLexer
             if char.isAlpha {
                 charParser = (GenericParser.character(char.lowercase) <|>
                     GenericParser.character(char.uppercase)) *> unit
