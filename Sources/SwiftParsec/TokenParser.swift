@@ -412,8 +412,7 @@ extension TokenParser {
     /// returns the value of the number. The number can be specified in
     /// 'decimal', 'hexadecimal' or 'octal'.
     public var natural: LexicalParser<UserState, Int> {
-        return lexeme(GenericTokenParser.naturalNumber) <?>
-            LocalizedString("natural")
+        lexeme(GenericTokenParser.naturalNumber) <?> LocalizedString("natural")
     }
 
     /// This lexeme parser parses an integer (a whole number). This parser is
@@ -488,21 +487,19 @@ extension TokenParser {
     /// Parses a positive whole number in the decimal system. Returns the value
     /// of the number.
     public static var decimal: LexicalParser<UserState, Int> {
-        return numberWithBase(10, parser: GenericParser.decimalDigit)
+        numberWithBase(10, parser: GenericParser.decimalDigit)
     }
 
     /// Parses a positive whole number in the hexadecimal system. The number
     /// should be prefixed with "x" or "X". Returns the value of the number.
     public static var hexadecimal: LexicalParser<UserState, Int> {
-        return GenericParser.oneOf(hexadecimalPrefixes) *>
-            numberWithBase(16, parser: GenericParser.hexadecimalDigit)
+        GenericParser.oneOf(hexadecimalPrefixes) *> numberWithBase(16, parser: GenericParser.hexadecimalDigit)
     }
 
     /// Parses a positive whole number in the octal system. The number should be
     /// prefixed with "o" or "O". Returns the value of the number.
     public static var octal: LexicalParser<UserState, Int> {
-        return GenericParser.oneOf(octalPrefixes) *>
-            numberWithBase(8, parser: GenericParser.octalDigit)
+        GenericParser.oneOf(octalPrefixes) *> numberWithBase(8, parser: GenericParser.octalDigit)
     }
 
     //
@@ -513,10 +510,8 @@ extension TokenParser {
     ///
     /// - parameter name: The name of the symbol to parse.
     /// - returns: `name`.
-    public func symbol(
-        _ name: String
-    ) -> LexicalParser<UserState, String> {
-        return lexeme(StringParser.string(name))
+    public func symbol(_ name: String) -> LexicalParser<UserState, String> {
+        lexeme(StrParser.string(name))
     }
 
     /// `lexeme(parser)` first applies `parser` and than the `whiteSpace`
@@ -533,10 +528,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser to transform in a 'lexeme'.
     /// - returns: The value of `parser`.
-    public func lexeme<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, Result> {
-        return parser <* whiteSpace
+    public func lexeme<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, Result> {
+        parser <* whiteSpace
     }
 
     /// Parses any white space. White space consists of _zero_ or more
@@ -579,7 +572,7 @@ extension TokenParser {
     public func parentheses<Result>(
         _ parser: LexicalParser<UserState, Result>
     ) -> LexicalParser<UserState, Result> {
-        return parser.between(symbol("("), symbol(")"))
+        parser.between(symbol("("), symbol(")"))
     }
 
     /// Lexeme parser `braces(parser)` parses `parser` enclosed in braces "{"
@@ -587,10 +580,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between the braces.
     /// - returns: The value of `parser`.
-    public func braces<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, Result> {
-        return parser.between(symbol("{"), symbol("}"))
+    public func braces<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, Result> {
+        parser.between(symbol("{"), symbol("}"))
     }
 
     /// Lexeme parser `angles(parser)` parses `parser` enclosed in angle
@@ -598,10 +589,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between the angles.
     /// - returns: The value of `parser`.
-    public func angles<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, Result> {
-        return parser.between(symbol("<"), symbol(">"))
+    public func angles<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, Result> {
+        parser.between(symbol("<"), symbol(">"))
     }
 
     /// Lexeme parser `brackets(parser)` parses `parser` enclosed in brackets
@@ -609,34 +598,32 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between the brackets.
     /// - returns: The value of `parser`.
-    public func brackets<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, Result> {
-        return parser.between(symbol("["), symbol("]"))
+    public func brackets<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, Result> {
+        parser.between(symbol("["), symbol("]"))
     }
 
     /// Lexeme parser `semicolon` parses the character ";" and skips any
     /// trailing white space. Returns the string ";".
     public var semicolon: LexicalParser<UserState, String> {
-        return symbol(";")
+        symbol(";")
     }
 
     /// Lexeme parser `comma` parses the character "," and skips any trailing
     /// white space. Returns the string ",".
     public var comma: LexicalParser<UserState, String> {
-        return symbol(",")
+        symbol(",")
     }
 
     /// Lexeme parser `colon` parses the character ":" and skips any trailing
     /// white space. Returns the string ":".
     public var colon: LexicalParser<UserState, String> {
-        return symbol(":")
+        symbol(":")
     }
 
     /// Lexeme parser `dot` parses the character "." and skips any trailing
     /// white space. Returns the string ".".
     public var dot: LexicalParser<UserState, String> {
-        return symbol(".")
+        symbol(".")
     }
 
     /// Lexeme parser `semicolonSeperated(parser)` parses _zero_ or more
@@ -645,10 +632,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between semicolons.
     /// - returns: An array of values returned by `parser`.
-    public func semicolonSeparated<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, [Result]> {
-        return parser.separatedBy(semicolon)
+    public func semicolonSeparated<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, [Result]> {
+        parser.separatedBy(semicolon)
     }
 
     /// Lexeme parser `semicolonSeperated1(parser)` parses _one_ or more
@@ -657,10 +642,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between semicolons.
     /// - returns: An array of values returned by `parser`.
-    public func semicolonSeparated1<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, [Result]> {
-        return parser.separatedBy1(semicolon)
+    public func semicolonSeparated1<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, [Result]> {
+        parser.separatedBy1(semicolon)
     }
 
     /// Lexeme parser `commaSeparated(parser)` parses _zero_ or more occurrences
@@ -669,10 +652,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between commas.
     /// - returns: An array of values returned by `parser`.
-    public func commaSeparated<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, [Result]> {
-        return parser.separatedBy(comma)
+    public func commaSeparated<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, [Result]> {
+        parser.separatedBy(comma)
     }
 
     /// Lexeme parser `commaSeparated1(parser)` parses _one_ or more occurrences
@@ -681,10 +662,8 @@ extension TokenParser {
     ///
     /// - parameter parser: The parser applied between commas.
     /// - returns: An array of values returned by `parser`.
-    public func commaSeparated1<Result>(
-        _ parser: LexicalParser<UserState, Result>
-    ) -> LexicalParser<UserState, [Result]> {
-        return parser.separatedBy1(comma)
+    public func commaSeparated1<Result>(_ parser: LexicalParser<UserState, Result>) -> LexicalParser<UserState, [Result]> {
+        parser.separatedBy1(comma)
     }
 
     //
@@ -701,7 +680,7 @@ extension TokenParser {
     }
 
     private var multiLineComment: VoidParser {
-        return GenericParser {
+        GenericParser {
             let commentStart =
                 StringParser.string(self.languageDefinition.commentStart)
 
@@ -710,12 +689,12 @@ extension TokenParser {
     }
 
     private var inComment: VoidParser {
-        return languageDefinition.allowNestedComments ?
+        languageDefinition.allowNestedComments ?
             inNestedComment : inNonNestedComment
     }
 
     private var inNestedComment: VoidParser {
-        return GenericParser {
+        GenericParser {
             let langDef = self.languageDefinition
 
             let startEnd = (
@@ -734,7 +713,7 @@ extension TokenParser {
     }
 
     private var inNonNestedComment: VoidParser {
-        return GenericParser {
+        GenericParser {
             let langDef = self.languageDefinition
 
             let startEnd = (
@@ -752,7 +731,7 @@ extension TokenParser {
     }
 
     private static var escapeCode: CharacterParser {
-        return charEscape <|> charNumber <|> charAscii <|> charControl <?>
+        charEscape <|> charNumber <|> charAscii <|> charControl <?>
             LocalizedString("escape code")
     }
 
@@ -826,8 +805,8 @@ extension TokenParser {
         _ base: Int,
         parser: CharacterParser
     ) -> IntParser {
-        return parser.many1 >>- { digits in
-            return integerWithDigits(String(digits), base: base)
+        parser.many1 >>- { digits in
+            integerWithDigits(String(digits), base: base)
         }
     }
 
@@ -856,7 +835,7 @@ extension TokenParser {
     }
 
     private static var doubleIntegerPart: DoubleParser {
-        return GenericParser.decimalDigit.many1 >>- { digits in
+        GenericParser.decimalDigit.many1 >>- { digits in
             GenericParser(result: Double(String(digits))!)
         }
     }
@@ -869,11 +848,10 @@ extension TokenParser {
         return zeroNumber <|> decimal
     }
 
-    private static func sign<Number: SignedNumeric>()
-        -> LexicalParser<UserState, (Number) -> Number> {
-        return GenericParser.character("-") *> GenericParser(result: -) <|>
-            GenericParser.character("+") *> GenericParser(result: { $0 }) <|>
-            GenericParser(result: { $0 })
+    private static func sign<Number: SignedNumeric>() -> LexicalParser<UserState, (Number) -> Number> {
+        GenericParser.character("-") *> GenericParser(result: -) <|>
+        GenericParser.character("+") *> GenericParser(result: { $0 }) <|>
+        GenericParser(result: { $0 })
     }
 
     private static func fractionalExponent(_ number: Double) -> DoubleParser {
@@ -896,7 +874,7 @@ extension TokenParser {
 
         let fraction = (fract <?> fractionMsg) >>- { frac in
             (expo <?> exponentMsg).otherwise(1) >>- { exp in
-                return GenericParser(result: (number + frac) * exp)
+                GenericParser(result: (number + frac) * exp)
             }
         }
 

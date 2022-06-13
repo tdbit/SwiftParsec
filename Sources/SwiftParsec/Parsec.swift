@@ -280,7 +280,7 @@ extension Parsec {
     ///   - parser: The parser whose error message is to be replaced.
     ///   - message: The new error message.
     public static func <?> (parser: Self, message: String) -> Self {
-        return parser.labels(message)
+        parser.labels(message)
     }
 
     /// Infix operator for `Parsec.alternative`. It has a higher precedence than
@@ -290,7 +290,7 @@ extension Parsec {
     ///   - leftParser: The first parser to try.
     ///   - rightParser: The second parser to try.
     public static func <|> (leftParser: Self, rightParser: Self) -> Self {
-        return leftParser.alternative(rightParser)
+        leftParser.alternative(rightParser)
     }
 }
 
@@ -340,7 +340,7 @@ public extension Parsec where UserState == () {
     /// - throws: A `ParseError` when an error occurs.
     /// - returns: The result of the parsing.
     func run(sourceName: String, input: StreamType) throws -> Result {
-        return try run(
+        try run(
             userState: (),
             sourceName: sourceName,
             input: input

@@ -59,7 +59,7 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
     public let startIndex = 0
 
     /// The operator table's "past the end" position.
-    public var endIndex: Int { return table.count }
+    public var endIndex: Int { table.count }
 
     // Backing store.
     private var table: [Element]
@@ -78,7 +78,7 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
     ///
     /// - SeeAlso: `IndexableBase` protocol.
     public func index(after index: OperatorTable.Index) -> OperatorTable.Index {
-        return table.index(after: index)
+        table.index(after: index)
     }
 
     /// Build an expression parser for terms returned by `combined` with
@@ -238,7 +238,7 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
         }
 
         func rightAssocParser1( _ right: Result ) -> GenericParser<StreamType, UserState, Result> {
-            return rightAssocParser(right) <|> GenericParser(result: right)
+            rightAssocParser(right) <|> GenericParser(result: right)
         }
 
         func leftAssocParser( _ left: Result ) -> GenericParser<StreamType, UserState, Result> {
@@ -251,11 +251,11 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
         }
 
         func leftAssocParser1( _ right: Result ) -> GenericParser<StreamType, UserState, Result> {
-            return leftAssocParser(right) <|> GenericParser(result: right)
+            leftAssocParser(right) <|> GenericParser(result: right)
         }
 
         func nonAssocParser( _ left: Result ) -> GenericParser<StreamType, UserState, Result> {
-            return nonAssocOp >>- { transform in
+            nonAssocOp >>- { transform in
                 termParser >>- { right in
                     ambigiousRight <|> ambigiousLeft <|> ambigiousNon <|>
                         GenericParser(result: transform(left, right))
@@ -352,5 +352,5 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
         table.replaceSubrange(subrange, with: newElements)
     }
 
-    public subscript(position: Index) -> Element { return table[position] }
+    public subscript(position: Index) -> Element { table[position] }
 }

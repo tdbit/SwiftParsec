@@ -12,10 +12,10 @@
 // Extension containing various utility methods.
 extension UnicodeScalar {
     /// The maximum value for a code point.
-    static var max: Int { return 0x10FFFF }
+    static var max: Int { 0x10FFFF }
 
     /// The minimum value for a code point.
-    static var min: Int { return 0 }
+    static var min: Int { 0 }
 
     /// Return a `UnicodeScalar` with value `v` or nil if the value is outside
     /// of Unicode codespace or a surrogate pair code point.
@@ -46,6 +46,6 @@ extension UnicodeScalar {
     }
 
     private static func isSurrogatePair<T: BinaryInteger>(_ value: T) -> Bool {
-        return value >= 0xD800 && value <= 0xDFFF
+        value >= 0xD800 && value <= 0xDFFF
     }
 }
