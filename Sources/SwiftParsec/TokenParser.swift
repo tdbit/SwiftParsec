@@ -215,7 +215,7 @@ public protocol TokenParser {
 // Default implementation of the methods of the `TokenParser` parser type.
 extension TokenParser {
     // Type aliases used internally to simplify the code.
-    typealias StrParser = LexicalParser<UserState, String>
+    typealias StringParser = LexicalParser<UserState, String>
     typealias CharacterParser = LexicalParser<UserState, Character>
     typealias IntParser = LexicalParser<UserState, Int>
     typealias DoubleParser = LexicalParser<UserState, Double>
@@ -236,14 +236,14 @@ extension TokenParser {
     public var identifier: LexicalParser<UserState, String> {
         let langDef = languageDefinition
 
-        let ident: StrParser = langDef.identifierStart >>- { char in
+        let ident: StringParser = langDef.identifierStart >>- { char in
             langDef.identifierLetter(char).many >>- { chars in
                 let allChars = chars.prepending(char)
                 return GenericParser(result: String(allChars))
             }
         } <?> LocalizedString("identifier")
 
-        let identCheck: StrParser = ident >>- { name in
+        let identCheck: StringParser = ident >>- { name in
             let reservedNames: Set<String>
             let identifierName: String
 
@@ -297,14 +297,14 @@ extension TokenParser {
     public var legalOperator: LexicalParser<UserState, String> {
         let langDef = languageDefinition
 
-        let operatorParser: StrParser = langDef.operatorStart >>- { char in
+        let operatorParser: StringParser = langDef.operatorStart >>- { char in
             langDef.operatorLetter.many >>- { chars in
                 let allChars = chars.prepending(char)
                 return GenericParser(result: String(allChars))
             }
         } <?> LocalizedString("operator")
 
-        let opCheck: StrParser = operatorParser >>- { name in
+        let opCheck: StringParser = operatorParser >>- { name in
             guard !langDef.reservedOperators.contains(name) else {
                 let reservedOperatorMsg = LocalizedString("reserved operator ")
                 return GenericParser.unexpected(reservedOperatorMsg + name)
@@ -516,7 +516,7 @@ extension TokenParser {
     public func symbol(
         _ name: String
     ) -> LexicalParser<UserState, String> {
-        return lexeme(StrParser.string(name))
+        return lexeme(StringParser.string(name))
     }
 
     /// `lexeme(parser)` first applies `parser` and than the `whiteSpace`
@@ -693,7 +693,7 @@ extension TokenParser {
     //
 
     private var oneLineComment: VoidParser {
-        let commentStart = StrParser.string(languageDefinition.commentLine)
+        let commentStart = StringParser.string(languageDefinition.commentLine)
 
         return commentStart.attempt *>
             GenericParser.satisfy({ $0 != "\n" }).skipMany *>
@@ -703,7 +703,7 @@ extension TokenParser {
     private var multiLineComment: VoidParser {
         return GenericParser {
             let commentStart =
-                StrParser.string(self.languageDefinition.commentStart)
+                StringParser.string(self.languageDefinition.commentStart)
 
             return commentStart.attempt *> self.inComment
         }
@@ -721,7 +721,7 @@ extension TokenParser {
             let startEnd = (
                 langDef.commentStart + langDef.commentEnd
                 ).removingDuplicates()
-            let commentEnd = StrParser.string(langDef.commentEnd)
+            let commentEnd = StringParser.string(langDef.commentEnd)
 
             return commentEnd.attempt *> GenericParser(result: ()) <|>
                 self.multiLineComment *> self.inNestedComment <|>
@@ -740,7 +740,7 @@ extension TokenParser {
             let startEnd = (
                 langDef.commentStart + langDef.commentEnd
             ).removingDuplicates()
-            let commentEnd = StrParser.string(langDef.commentEnd)
+            let commentEnd = StringParser.string(langDef.commentEnd)
 
             return commentEnd.attempt *> GenericParser(result: ()) <|>
                 GenericParser.noneOf(String(startEnd)).skipMany1 *>
@@ -780,7 +780,7 @@ extension TokenParser {
 
     private static var charAscii: CharacterParser {
         let parsers = asciiCodesMap.map { control in
-            StrParser.string(control.esc) *> GenericParser(result: control.code)
+            StringParser.string(control.esc) *> GenericParser(result: control.code)
         }
 
         return GenericParser.choice(parsers)
@@ -907,9 +907,9 @@ extension TokenParser {
         return fraction <|> exponent
     }
 
-    private func caseString(_ name: String) -> StrParser {
+    private func caseString(_ name: String) -> StringParser {
         if languageDefinition.isCaseSensitive {
-            return StrParser.string(name)
+            return StringParser.string(name)
         }
 
         func walk(_ string: String) -> VoidParser {
