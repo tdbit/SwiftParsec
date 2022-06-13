@@ -28,7 +28,7 @@ class PositionTests: XCTestCase {
 
         let strParser = StringParser.string(str)
         let positionParser = strParser *>
-            GenericParser<String, (), SourcePosition>.sourcePosition
+            LexicalParser<(), SourcePosition>.sourcePosition
 
         let errorMessage = "GenericParser.sourcePosition should return " +
             "column value equal to \"\(expectedColumn)\"."
@@ -53,7 +53,7 @@ class PositionTests: XCTestCase {
 
         let strParser = StringParser.string(str)
         let positionParser = strParser *>
-            GenericParser<String, (), SourcePosition>.sourcePosition
+            LexicalParser<(), SourcePosition>.sourcePosition
 
         let errorMessage = "GenericParser.sourcePosition should return " +
             "line value equal to \"\(expectedLine)\" and column value equal " +
@@ -80,7 +80,7 @@ class PositionTests: XCTestCase {
 
         let strParser = StringParser.string(str)
         let positionParser = strParser *>
-            GenericParser<String, (), SourcePosition>.sourcePosition
+            LexicalParser<(), SourcePosition>.sourcePosition
 
         let errorMessage = "GenericParser.sourcePosition should return " +
             "column value equal to \"\(expectedColumn)\"."

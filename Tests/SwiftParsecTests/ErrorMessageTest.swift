@@ -292,7 +292,7 @@ class ErrorMessageTests: XCTestCase {
     }
 
     func errorMessageTest<Result>(
-        _ parser: GenericParser<String, (), Result>,
+        _ parser: LexicalParser<(), Result>,
         input: String,
         assert: (String) -> Void
     ) {

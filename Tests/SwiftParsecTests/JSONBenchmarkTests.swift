@@ -22,7 +22,7 @@ class JSONBenchmarkTests: XCTestCase {
     )
 
     private typealias StatisticsParser =
-        GenericParser<String, JSONStatistics, ()>
+        LexicalParser<JSONStatistics, ()>
 
     // Test the performance of a parser gathering basic statistics on a JSON
     // file. The goal is to keep the building part as light as possible to
@@ -66,11 +66,11 @@ class JSONBenchmarkTests: XCTestCase {
             return stats
         }
 
-        var jarray: GenericParser<String, JSONStatistics, ()>!
-        var jobject: GenericParser<String, JSONStatistics, ()>!
+        var jarray: LexicalParser<JSONStatistics, ()>!
+        var jobject: LexicalParser<JSONStatistics, ()>!
 
         _ = GenericParser.recursive { (
-            jvalue: GenericParser<String, JSONStatistics, ()>
+            jvalue: LexicalParser<JSONStatistics, ()>
         ) in
 
             let jarrayValues = lexer.commaSeparated(jvalue)
@@ -86,7 +86,7 @@ class JSONBenchmarkTests: XCTestCase {
                 symbol(":") *> jvalue.map { _ in (name, ()) }
             }
 
-            let dictionary: GenericParser<String, JSONStatistics, [String: ()]> =
+            let dictionary: LexicalParser<JSONStatistics, [String: ()]> =
             (symbol(",") *> nameValue).manyAccumulator { _, dict in
                 return dict
             }
@@ -141,7 +141,7 @@ class JSONBenchmarkTests: XCTestCase {
         var statistics: JSONStatistics?
 
         let statisticsParser = jsonParser *>
-            GenericParser<String, JSONStatistics, JSONStatistics>.userState
+            LexicalParser<JSONStatistics, JSONStatistics>.userState
         self.measure {
             do {
                 let stats = try statisticsParser.run(

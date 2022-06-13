@@ -689,7 +689,7 @@ class CombinatorParsersTests: XCTestCase {
     }
 
     func testChainLeft() {
-        let addOp: GenericParser<String, (), (Int, Int) -> Int> =
+        let addOp: LexicalParser<(), (Int, Int) -> Int> =
         StringParser.character("+") *> GenericParser(result: +) <|>
             StringParser.character("-") *> GenericParser(result: -)
 
@@ -718,7 +718,7 @@ class CombinatorParsersTests: XCTestCase {
             )
         }
 
-        let mulOp: GenericParser<String, (), (Int, Int) -> Int> =
+        let mulOp: LexicalParser<(), (Int, Int) -> Int> =
         StringParser.character("*") *> GenericParser(result: *) <|>
             StringParser.character("/") *> GenericParser(result: /)
 
@@ -758,7 +758,7 @@ class CombinatorParsersTests: XCTestCase {
     }
 
     func testChainLeft1() {
-        let addOp: GenericParser<String, (), (Int, Int) -> Int> =
+        let addOp: LexicalParser<(), (Int, Int) -> Int> =
         StringParser.character("+") *> GenericParser(result: +) <|>
             StringParser.character("-") *> GenericParser(result: -)
 
@@ -787,7 +787,7 @@ class CombinatorParsersTests: XCTestCase {
             )
         }
 
-        let mulOp: GenericParser<String, (), (Int, Int) -> Int> =
+        let mulOp: LexicalParser<(), (Int, Int) -> Int> =
         StringParser.character("*") *> GenericParser(result: *) <|>
             StringParser.character("/") *> GenericParser(result: /)
 
@@ -919,12 +919,12 @@ class CombinatorParsersTests: XCTestCase {
 
         let decimal = GenericTokenParser<()>.decimal
 
-        let operators: GenericParser<String, (), (Int, Int) -> Int> =
+        let operators: LexicalParser<(), (Int, Int) -> Int> =
         StringParser.character("+") *> GenericParser(result: +) <|>
             StringParser.character("-") *> GenericParser(result: -)
 
-        let expression = GenericParser<String, (), Int>.recursive { expression in
-            func opParser(_ left: Int) -> GenericParser<String, (), Int> {
+        let expression = LexicalParser<(), Int>.recursive { expression in
+            func opParser(_ left: Int) -> LexicalParser<(), Int> {
                 return operators >>- { transform in
                     expression >>- { right in
                         opParser1(transform(left, right))
@@ -932,7 +932,7 @@ class CombinatorParsersTests: XCTestCase {
                 }
             }
 
-            func opParser1(_ right: Int) -> GenericParser<String, (), Int> {
+            func opParser1(_ right: Int) -> LexicalParser<(), Int> {
                 return opParser(right) <|> GenericParser(result: right)
             }
 
