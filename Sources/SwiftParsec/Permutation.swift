@@ -44,7 +44,7 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
     public let startIndex = 0
 
     /// The permutation's "past the end" position.
-    public var endIndex: Int { return parsers.count }
+    public var endIndex: Int { parsers.count }
 
     // Backing store.
     private var parsers: [Element]
@@ -64,13 +64,13 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
     ///
     /// - SeeAlso: `IndexableBase` protocol.
     public func index(after index: Permutation.Index) -> Permutation.Index {
-        return parsers.index(after: index)
+        parsers.index(after: index)
     }
 
     /// A parser applying to the permutation of all the parsers contained in
     /// `self`.
     public func makeParser() -> GenericParser<StreamType, UserState, [Result]> {
-        return makeParser(separator: GenericParser(result: ()))
+        makeParser(separator: GenericParser(result: ()))
     }
 
     /// A parser applying to the permutation of all the parsers contained in
@@ -181,5 +181,5 @@ RangeReplaceableCollection, ExpressibleByArrayLiteral {
         parsers.replaceSubrange(subrange, with: newElements)
     }
 
-    public subscript(position: Index) -> Element { return parsers[position] }
+    public subscript(position: Index) -> Element { parsers[position] }
 }

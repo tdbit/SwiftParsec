@@ -24,32 +24,32 @@ public struct CharacterSet {
 
     /// Convenience factory for `Foundation.CharacterSet#uppercaseLetters`
     public static var uppercaseLetters: CharacterSet {
-        return CharacterSet(Foundation.CharacterSet.uppercaseLetters)
+        CharacterSet(Foundation.CharacterSet.uppercaseLetters)
     }
 
     /// Convenience factory for `Foundation.CharacterSet#lowercaseLetters`
     public static var lowercaseLetters: CharacterSet {
-        return CharacterSet(Foundation.CharacterSet.lowercaseLetters)
+        CharacterSet(Foundation.CharacterSet.lowercaseLetters)
     }
 
     /// Convenience factory for `Foundation.CharacterSet#decimalDigits`
     public static var decimalDigits: CharacterSet {
-        return CharacterSet(Foundation.CharacterSet.decimalDigits)
+        CharacterSet(Foundation.CharacterSet.decimalDigits)
     }
 
     /// Convenience factory for `Foundation.CharacterSet#symbols`
     public static var symbols: CharacterSet {
-        return CharacterSet(Foundation.CharacterSet.symbols)
+        CharacterSet(Foundation.CharacterSet.symbols)
     }
 
     /// Convenience factory for `Foundation.CharacterSet#letters`
     public static var letters: CharacterSet {
-        return CharacterSet(Foundation.CharacterSet.letters)
+        CharacterSet(Foundation.CharacterSet.letters)
     }
 
     /// Convenience factory for `Foundation.CharacterSet#alphanumerics`
     public static var alphanumerics: CharacterSet {
-        return CharacterSet(Foundation.CharacterSet.alphanumerics)
+        CharacterSet(Foundation.CharacterSet.alphanumerics)
     }
 
     /// Alternative to `Foundation.CharacterSet#init` that does not fail for
