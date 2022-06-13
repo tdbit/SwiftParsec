@@ -291,7 +291,7 @@ public extension GenericParser {
     /// by `self`. This parser can for example be used to eliminate left
     /// recursion which typically occurs in expression grammars.
     ///
-    ///     let addOp: GenericParser<String, (), (Int, Int) -> Int> =
+    ///     let addOp: LexicalParser<(), (Int, Int) -> Int> =
     ///         StringParser.character("+") *> GenericParser(result: +) <|>
     ///         StringParser.character("-") *> GenericParser(result: -)
     ///

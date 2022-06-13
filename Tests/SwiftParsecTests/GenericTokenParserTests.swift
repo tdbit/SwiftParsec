@@ -1092,8 +1092,8 @@ class GenericTokenParserTests: XCTestCase {
 
     func testBracketsParser(
         _ parser: (
-            GenericParser<String, (), String>
-        ) -> GenericParser<String, (), String>,
+            LexicalParser<(), String>
+        ) -> LexicalParser<(), String>,
         parserName: String,
         opening: String,
         closing: String
@@ -1146,8 +1146,8 @@ class GenericTokenParserTests: XCTestCase {
 
     func testPunctuationSeparated(
         _ parser: (
-            GenericParser<String, (), String>
-        ) -> GenericParser<String, (), [String]>,
+            LexicalParser<(), String>
+        ) -> LexicalParser<(), [String]>,
         parserName: String, punctuation: String,
         allowZeroOccurence: Bool
     ) {

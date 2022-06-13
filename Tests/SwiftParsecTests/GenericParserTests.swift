@@ -14,7 +14,7 @@ class GenericParserTests: XCTestCase {
         let trans = { (num: Int) in String(num) }
         let int99 = 99
 
-        let intParser = GenericParser<String, (), Int>(result: int99)
+        let intParser = LexicalParser<(), Int>(result: int99)
         let mappedParser = trans <^> intParser
 
         let errorMessage = "GenericParser.map should succeed."
@@ -50,10 +50,10 @@ class GenericParserTests: XCTestCase {
 
     func testApplicative() {
         let int99 = 99
-        let int99Parser = GenericParser<String, (), Int>(result: int99)
+        let int99Parser = LexicalParser<(), Int>(result: int99)
 
         let int1 = 1
-        let int1Parser = GenericParser<String, (), Int>(result: int1)
+        let int1Parser = LexicalParser<(), Int>(result: int1)
 
         let errorMessage = "GenericParser.apply should succeed."
 
@@ -330,8 +330,8 @@ class GenericParserTests: XCTestCase {
         let leftNumber = 1
         let rightNumber = 2
 
-        let left = GenericParser<String, (), Int>(result: leftNumber)
-        let right = GenericParser<String, (), Int>(result: rightNumber)
+        let left = LexicalParser<(), Int>(result: leftNumber)
+        let right = LexicalParser<(), Int>(result: rightNumber)
 
         let add = GenericParser.lift2(-, parser1: left, parser2: right)
 
@@ -354,9 +354,9 @@ class GenericParserTests: XCTestCase {
         let number2 = 2
         let number3 = 3
 
-        let num1 = GenericParser<String, (), Int>(result: number1)
-        let num2 = GenericParser<String, (), Int>(result: number2)
-        let num3 = GenericParser<String, (), Int>(result: number3)
+        let num1 = LexicalParser<(), Int>(result: number1)
+        let num2 = LexicalParser<(), Int>(result: number2)
+        let num3 = LexicalParser<(), Int>(result: number3)
 
         let add = GenericParser.lift3({ $0 - $1 - $2 },
             parser1: num1,
@@ -384,10 +384,10 @@ class GenericParserTests: XCTestCase {
         let number3 = 3
         let number4 = 4
 
-        let num1 = GenericParser<String, (), Int>(result: number1)
-        let num2 = GenericParser<String, (), Int>(result: number2)
-        let num3 = GenericParser<String, (), Int>(result: number3)
-        let num4 = GenericParser<String, (), Int>(result: number4)
+        let num1 = LexicalParser<(), Int>(result: number1)
+        let num2 = LexicalParser<(), Int>(result: number2)
+        let num3 = LexicalParser<(), Int>(result: number3)
+        let num4 = LexicalParser<(), Int>(result: number4)
 
         let add = GenericParser.lift4({ $0 - $1 - $2 - $3 },
             parser1: num1,
@@ -417,11 +417,11 @@ class GenericParserTests: XCTestCase {
         let number4 = 4
         let number5 = 5
 
-        let num1 = GenericParser<String, (), Int>(result: number1)
-        let num2 = GenericParser<String, (), Int>(result: number2)
-        let num3 = GenericParser<String, (), Int>(result: number3)
-        let num4 = GenericParser<String, (), Int>(result: number4)
-        let num5 = GenericParser<String, (), Int>(result: number5)
+        let num1 = LexicalParser<(), Int>(result: number1)
+        let num2 = LexicalParser<(), Int>(result: number2)
+        let num3 = LexicalParser<(), Int>(result: number3)
+        let num4 = LexicalParser<(), Int>(result: number4)
+        let num5 = LexicalParser<(), Int>(result: number5)
 
         let add = GenericParser.lift5({ $0 - $1 - $2 - $3 - $4 },
             parser1: num1,
@@ -448,11 +448,11 @@ class GenericParserTests: XCTestCase {
 
     func testUpdateUserState() {
         let updateUserState =
-        GenericParser<String, Int, Character>.updateUserState(curriedPlus(1))
+        LexicalParser<Int, Character>.updateUserState(curriedPlus(1))
 
         let countLetters =
-            GenericParser<String, Int, Character>.letter <* updateUserState
-        let digits = GenericParser<String, Int, Character>.digit
+            LexicalParser<Int, Character>.letter <* updateUserState
+        let digits = LexicalParser<Int, Character>.digit
         let alphaNum = countLetters <* digits.skipMany
 
         let matching = ["a1234H23A3A0à1234É5678ê0ç6ë7"]
@@ -460,7 +460,7 @@ class GenericParserTests: XCTestCase {
         let errorMessage = "GenericParser.updateUserState should succeed."
 
         let userState = alphaNum.many *>
-            GenericParser<String, Int, Int>.userState
+            LexicalParser<Int, Int>.userState
         do {
             for input in matching {
                 let state = try userState.run(

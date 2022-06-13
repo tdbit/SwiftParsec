@@ -14,7 +14,7 @@ extension XCTestCase {
     /// assertions are performed in the `assert` function. If an error is thrown
     /// it is reported with `XCTFail()`.
     func testStringParserSuccess<Result, Input: Collection>(
-        _ parser: GenericParser<String, (), Result>,
+        _ parser: LexicalParser<(), Result>,
         inputs: Input, assert: (String, Result) -> Void
     ) where Input.Iterator.Element == String {
         do {
@@ -33,7 +33,7 @@ extension XCTestCase {
     /// `assert` function. If an error is thrown it is reported with
     /// `XCTFail()`.
     func testParserSuccess<Result>(
-        _ parser: GenericParser<String, (), Result>,
+        _ parser: LexicalParser<(), Result>,
         assert: (String, Result) -> Void
     ) {
         testStringParserSuccess(parser, inputs: [""], assert: assert)
@@ -43,7 +43,7 @@ extension XCTestCase {
     /// assertions are performed in the `assert` function. If an error is thrown
     /// it is reported with `XCTFail()`.
     func testStringParserFailure<Result, Input: Collection>(
-        _ parser: GenericParser<String, (), Result>,
+        _ parser: LexicalParser<(), Result>,
         inputs: Input,
         assert: (String, Result) -> Void
     ) where Input.Iterator.Element == String {

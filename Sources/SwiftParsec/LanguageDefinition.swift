@@ -30,24 +30,24 @@ public struct LanguageDefinition<UserState> {
 
     /// This parser should accept any start characters of identifiers. For
     /// example `letter <|> character("_")`.
-    public var identifierStart: GenericParser<String, UserState, Character>
+    public var identifierStart: LexicalParser<UserState, Character>
 
     /// This parser should accept any legal tail characters of identifiers. For
     /// example `alphaNum <|> character("_")`. The function receives the
     /// character parsed by `identifierStart` as parameter, allowing to handle
     /// special cases (i.e. implicit parameters in swift start with a '$' that
     /// must be followed by decimal digits only).
-    public var identifierLetter: (Character) -> GenericParser<String, UserState, Character>
+    public var identifierLetter: (Character) -> LexicalParser<UserState, Character>
 
     /// This parser should accept any start characters of operators. For example
     /// `oneOf(":!#$%&*+./<=>?@\\^|-~")`
-    public var operatorStart: GenericParser<String, UserState, Character>
+    public var operatorStart: LexicalParser<UserState, Character>
 
     /// This parser should accept any legal tail characters of operators. Note
     /// that this parser should even be defined if the language doesn't support
     /// user-defined operators, or otherwise the `reservedOperators` parser
     /// won't work correctly.
-    public var operatorLetter: GenericParser<String, UserState, Character>
+    public var operatorLetter: LexicalParser<UserState, Character>
 
     /// The set of reserved identifiers.
     public var reservedNames: Set<String>
@@ -59,7 +59,7 @@ public struct LanguageDefinition<UserState> {
     /// also replace the string gap and zero-width escape sequence parsers. The
     /// default escape sequences have the following form: '\97' '\x61', '\o141',
     /// '\^@', '\n', \NUL.
-    public var characterEscape: GenericParser<String, UserState, Character>?
+    public var characterEscape: LexicalParser<UserState, Character>?
 
     /// Set to `true` if the language is case sensitive.
     public var isCaseSensitive: Bool
@@ -115,7 +115,7 @@ public extension LanguageDefinition {
     static var json: LanguageDefinition {
         var jsonDef = empty
 
-        let charEscParsers: [GenericParser<String, UserState, Character>] =
+        let charEscParsers: [LexicalParser<UserState, Character>] =
         jsonEscapeMap.map { escCode in
             GenericParser.character(escCode.esc) *>
                 GenericParser(result: escCode.code)
@@ -123,7 +123,7 @@ public extension LanguageDefinition {
 
         let charEscape = GenericParser.choice(charEscParsers)
 
-        let hexaNum: GenericParser<String, UserState, UInt16> =
+        let hexaNum: LexicalParser<UserState, UInt16> =
         GenericParser.hexadecimalDigit.count(jsonMaxEscapeDigit) >>- { digits in
             // The max possible value of `digits` is 0xFFFF, so no possible
             // overflow.
@@ -132,10 +132,10 @@ public extension LanguageDefinition {
         }
 
         let backslash =
-            GenericParser<String, UserState, Character>.character("\\")
+            LexicalParser<UserState, Character>.character("\\")
 
         let codePoint = GenericParser.character("u") *> hexaNum
-        let encodedChar: GenericParser<String, UserState, Character> =
+        let encodedChar: LexicalParser<UserState, Character> =
         codePoint >>- { cp1 in
             if cp1.isSingleCodeUnit {
                 return GenericParser(result: Character(UnicodeScalar(cp1)!))
@@ -201,7 +201,7 @@ public extension LanguageDefinition {
             "=", "->", ".", ",", ":", "@", "#", "<", "&", "`", "?", ">", "!"
         ]
 
-        let charEscParsers: [GenericParser<String, UserState, Character>] =
+        let charEscParsers: [LexicalParser<UserState, Character>] =
         swiftEscapeMap.map { escCode in
             GenericParser.character(escCode.esc) *>
                 GenericParser(result: escCode.code)
@@ -209,7 +209,7 @@ public extension LanguageDefinition {
 
         let charEscape = GenericParser.choice(charEscParsers)
 
-        let hexaChar: GenericParser<String, UserState, Character> =
+        let hexaChar: LexicalParser<UserState, Character> =
         (GenericParser.hexadecimalDigit <?> "").many1 >>- { digits in
             let num = String(digits)
             return GenericTokenParser.integerWithDigits(num, base: 16) >>- { intVal in
@@ -218,7 +218,7 @@ public extension LanguageDefinition {
         } <?> LocalizedString("hexadecimal digit(s)")
 
         let charNumber =
-            GenericParser<String, UserState, Character>.string("u{") *>
+            LexicalParser<UserState, Character>.string("u{") *>
             hexaChar <* GenericParser.character("}")
 
         let escapeCodeMsg = LocalizedString("escape code")
